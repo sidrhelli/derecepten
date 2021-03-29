@@ -1,0 +1,20 @@
+{
+  "title": "pannekoeken met stroop",
+  "kcal": 350.0,
+  "prepTime": 100,
+  "persons": 4,
+  "prepInstructions": "avond eten",
+  "foodThemeType": "MEALCOURSE",
+  "ingredients": [
+    {
+      "quantity": 30.0,
+      "measurementUnitType": "GRAM",
+      "title": "bloem"
+    },
+    {
+      "quantity": 30.0,
+      "measurementUnitType": "LITER",
+      "title": "melk"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.derecepten.restapi.controller;
 
+import com.derecepten.restapi.config.RandomIdGenerator;
 import com.derecepten.restapi.exception.BadRequestException;
 import com.derecepten.restapi.model.AuthProvider;
 import com.derecepten.restapi.model.User;
@@ -9,6 +10,7 @@ import com.derecepten.restapi.payload.LoginRequest;
 import com.derecepten.restapi.payload.SignUpRequest;
 import com.derecepten.restapi.repository.UserRepository;
 import com.derecepten.restapi.security.TokenProvider;
+import com.derecepten.restapi.util.DatabaseUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,12 +37,15 @@ public class AuthController {
 
     private final TokenProvider tokenProvider;
 
+    private final RandomIdGenerator randomIdGenerator;
+
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          PasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
+                          PasswordEncoder passwordEncoder, TokenProvider tokenProvider, RandomIdGenerator randomIdGenerator, RandomIdGenerator randomIdGenerator1) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.randomIdGenerator = randomIdGenerator1;
     }
 
     @PostMapping("/login")
@@ -69,8 +76,12 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
+        user.setRandomId(randomIdGenerator.generateRandomId());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Set created timestamp form recipe
+        user.setCreatedTimestamp(DatabaseUtils.parseTimestamp(Timestamp.from(Instant.now()).toString()));
 
         User result = userRepository.save(user);
 

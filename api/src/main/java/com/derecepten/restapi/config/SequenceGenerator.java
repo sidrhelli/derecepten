@@ -1,5 +1,10 @@
-package com.derecepten.restapi.controller;
+package com.derecepten.restapi.config;
 
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.net.NetworkInterface;
 import java.security.SecureRandom;
@@ -13,6 +18,7 @@ import java.util.Enumeration;
  * This class should be used as a Singleton.
  * Make sure that you create and reuse a Single instance of SequenceGenerator per machine in your distributed system cluster.
  */
+@Component
 public class SequenceGenerator {
     private static final int TOTAL_BITS = 64;
     private static final int EPOCH_BITS = 42;

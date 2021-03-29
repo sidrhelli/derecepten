@@ -1,9 +1,15 @@
 package com.derecepten.restapi.model;
+
+import com.derecepten.restapi.model.recipe.Recipe;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -11,7 +17,8 @@ import javax.validation.constraints.NotNull;
 })
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "user_id_seq", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", initialValue = 355)
     private Long id;
 
     @Column(nullable = false)
@@ -29,11 +36,23 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Column(name = "random_id", unique = true)
+    private String randomId;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Recipe> recipes = new HashSet<>();
+
     private String providerId;
+
+    @Column(name = "created_timestamp")
+    private Timestamp createdTimestamp;
+
+    public User() {
+    }
 
     public Long getId() {
         return id;
@@ -97,5 +116,43 @@ public class User {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public Set<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(Set<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public String getRandomId() {
+        return randomId;
+    }
+
+    public void setRandomId(String randomId) {
+        this.randomId = randomId;
+    }
+
+    public Timestamp getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Timestamp createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return getId().equals(user.getId()) &&
+                getEmail().equals(user.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getEmail());
     }
 }

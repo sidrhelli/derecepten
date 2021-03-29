@@ -1,27 +1,21 @@
 package com.derecepten.restapi.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
+/**
+ * Created by sergioh on 03/25/2021
+ **/
+public class ResourceAlreadyExistsException extends Exception {
     private String resourceName;
     private String fieldName;
     private Object fieldValue;
 
-    public ResourceNotFoundException(Long id) {
-        super("Resource not found : " + id);
-
-    }
-
-    public ResourceNotFoundException(String resourceName, String fieldName, Object fieldValue) {
+    public ResourceAlreadyExistsException(String resourceName, String fieldName, Object fieldValue) {
         super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }
 
-    public ResourceNotFoundException(String s) {
+    public ResourceAlreadyExistsException(String s) {
         super(s);
     }
 

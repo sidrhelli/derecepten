@@ -1,5 +1,6 @@
 package com.derecepten.restapi.security.oauth2;
 
+import com.derecepten.restapi.config.RandomIdGenerator;
 import com.derecepten.restapi.model.AuthProvider;
 import com.derecepten.restapi.model.User;
 import com.derecepten.restapi.security.oauth2.user.OAuth2UserInfoFactory;
@@ -7,7 +8,7 @@ import com.derecepten.restapi.exception.OAuth2AuthenticationProcessingException;
 import com.derecepten.restapi.repository.UserRepository;
 import com.derecepten.restapi.security.UserPrincipal;
 import com.derecepten.restapi.security.oauth2.user.OAuth2UserInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.derecepten.restapi.util.DatabaseUtils;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,13 +18,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RandomIdGenerator randomIdGenerator;
+
+    public CustomOAuth2UserService(UserRepository userRepository, RandomIdGenerator randomIdGenerator) {
+        this.userRepository = userRepository;
+        this.randomIdGenerator = randomIdGenerator;
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
@@ -64,12 +72,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         User user = new User();
-
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         user.setProviderId(oAuth2UserInfo.getId());
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setRandomId(randomIdGenerator.generateRandomId());
+
+        // Set created timestamp form recipe
+        user.setCreatedTimestamp(DatabaseUtils.parseTimestamp(Timestamp.from(Instant.now()).toString()));
         return userRepository.save(user);
     }
 

@@ -38,7 +38,7 @@ class TokenProviderTest {
 
 
         return Jwts.builder()
-                .setSubject(Long.toString(3L))
+                .setSubject(Long.toString(456L))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(key)

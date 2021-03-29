@@ -11,7 +11,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(AppProperties.class)
 public class DereceptenRestAPI {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DereceptenRestAPI.class, args);
-	}
+
+    public static void main(String[] args) {
+        SpringApplication.run(DereceptenRestAPI.class, args);
+    }
+
+
 }
